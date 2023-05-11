@@ -1,5 +1,6 @@
 package skyrim;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
@@ -19,31 +20,22 @@ import skyrim.helpers.Images;
  * @version
  * 
  */
-public class Skyrim extends JFrame implements ActionListener{
-    
+public class Skyrim extends JFrame implements ActionListener {
+
     private final Images images = new Images();
     
     public Skyrim() {
-
+        setUndecorated(true);
+        setLocation(50,10);
         setTitle("Skyrim");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setIconImage(images.getIcons("Skyrim_Icon"));
         initComponents();
         setVisible(true);        
     }
-    public static void main(String[] args) {
-        new Skyrim();
-        
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } 
-        catch (ClassNotFoundException ex) {} 
-        catch (InstantiationException ex) {}
-        catch (IllegalAccessException ex) {}
-        catch (UnsupportedLookAndFeelException ex) {}
-    }
-
+    
     private void initComponents() {
+        createLookAndFeel();
         setMenuBar();
         
         JLabel image = new JLabel(images.getImages(Images.SKYRIM_WALL));
@@ -54,6 +46,11 @@ public class Skyrim extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()) {
+            case "alchemy":
+                setVisible(false);
+                new Alchemy();
+                dispose();
+                break;
             case "exit":
                 setVisible(false);
                 dispose();
@@ -68,7 +65,7 @@ public class Skyrim extends JFrame implements ActionListener{
         JMenuItem enchanting = new JMenuItem("Enchanting");
         JMenuItem smithing = new JMenuItem("Smithing");
         JMenuItem exit = new JMenuItem("Exit");
-        alchemy.setEnabled(false);
+        alchemy.setEnabled(true);
         alchemy.setActionCommand("alchemy");
         alchemy.addActionListener(this);
         enchanting.setEnabled(false);
@@ -89,6 +86,30 @@ public class Skyrim extends JFrame implements ActionListener{
         mb.add(apps);
         setJMenuBar(mb);
     }
-
+    
+    private void createLookAndFeel() {
+        Color LightSeaGreen = new Color(32, 178, 170);
+        Color DarkSlateBlue = new Color(72, 61, 139);
+        Color SlateBlue = new Color(106, 90, 205);
+        UIManager.put("nimbusBase", DarkSlateBlue);
+        UIManager.put("nimbusBlueGrey", DarkSlateBlue);
+        UIManager.put("control", SlateBlue);
+        
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } 
+        catch (ClassNotFoundException ex) {} 
+        catch (InstantiationException ex) {}
+        catch (IllegalAccessException ex) {}
+        catch (UnsupportedLookAndFeelException ex) {}
+        
+    }
+    
+    public static void main(String[] args) {
+        new Skyrim();
+        
+        
+        
+    }
 
 }

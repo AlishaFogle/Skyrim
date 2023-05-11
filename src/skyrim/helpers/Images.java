@@ -16,14 +16,15 @@ public class Images {
     
     // Static Key Names:
     public static final String SKYRIM_ICON = "Skyrim_Icon";
-    public static final String ALCHEMY_ICON = "Alchemy_Icon";
-    public static final String ENCHANTING_ICON = "Enchanting_Icon";
-    public static final String SMITHING_ICON = "Alchemy_Icon";
     public static final String SKYRIM_HEADER = "Skyrim_Header";
     public static final String SKYRIM_WALL = "Skyrim_Wall";
     public static final String ALCHEMY = "Alchemy";
+    public static final String ALCHEMY_ICON = "Alchemy_Icon";
+    public static final String ALCHEMY_HEADER = "Alchemy_Header";
     public static final String ENCHANTING = "Enchanting";
+    public static final String ENCHANTING_ICON = "Enchanting_Icon";
     public static final String SMITHING = "Smithing";
+    public static final String SMITHING_ICON = "Smithing_Icon";
     
     // Hashtables to hold image and icon data:
     private final Hashtable<String,Image> icons = new Hashtable<>();
@@ -39,6 +40,7 @@ public class Images {
     private final ImageIcon skyrim_header = new ImageIcon(getClass().getResource("/skyrim/images/Skyrim_Header.jpg"));
     private final ImageIcon skyrim_wall = new ImageIcon(getClass().getResource("/skyrim/images/Skyrim_Wallpaper_401.jpg"));
     private final ImageIcon alchemy_image = new ImageIcon(getClass().getResource("/skyrim/images/Alchemy.png"));
+    private final ImageIcon alchemy_header = new ImageIcon(getClass().getResource("/skyrim/images/alchemy_header.jpg"));
     private final ImageIcon enchanting_image = new ImageIcon(getClass().getResource("/skyrim/images/Enchanting.png"));
     private final ImageIcon smithing_image = new ImageIcon(getClass().getResource("/skyrim/images/Smithing.png"));
 
@@ -59,6 +61,7 @@ public class Images {
         images.put("Skyrim_Header", skyrim_header);
         images.put("Skyrim_Wall", skyrim_wall);
         images.put("Alchemy", alchemy_image);
+        images.put("Alchemy_Header", alchemy_header);
         images.put("Enchanting", enchanting_image);
         images.put("Smithing", smithing_image);
     }
