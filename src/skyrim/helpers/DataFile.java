@@ -20,7 +20,6 @@ public class DataFile {
     }
     private void makeBaseDur() {
         baseDur.put("Cure Disease", 0);
-        baseDur.put("Cure Poison", 0);
         baseDur.put("Damage Health", 1);
         baseDur.put("Damage Magicka", 1);
         baseDur.put("Damage Magicka Regen", 5);
@@ -78,7 +77,6 @@ public class DataFile {
     }
     private void makeBaseCost() {
         baseCost.put("Cure Disease", 0.5f);
-        baseCost.put("Cure Poison", 0.2f);
         baseCost.put("Damage Health", 3.0f);
         baseCost.put("Damage Magicka", 2.2f);
         baseCost.put("Damage Magicka Regen", 0.5f);
@@ -137,7 +135,6 @@ public class DataFile {
     private void makeBaseMag() {
         baseMag.put("An Effect",0);
         baseMag.put("Cure Disease", 5);
-        baseMag.put("Cure Poison", 2);
         baseMag.put("Damage Health", 2);
         baseMag.put("Damage Magicka", 3);
         baseMag.put("Damage Magicka Regen", 100);

@@ -3,26 +3,31 @@ package skyrim;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
+import javax.swing.DropMode;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
-
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
 import skyrim.helpers.CreateControls;
+import skyrim.helpers.DataFile;
 import skyrim.helpers.Images;
 
 /**
@@ -36,8 +41,8 @@ import skyrim.helpers.Images;
  */
 public class Alchemy extends JFrame implements ActionListener {
     
-    private final int frame_width = 585;
-    private final int frame_height = 650;
+    private static final int frame_width = 490;
+    private static final int frame_height = 660;
     private int northPane_width;
     private int northPane_height;
     private int westPane_width;
@@ -46,7 +51,7 @@ public class Alchemy extends JFrame implements ActionListener {
     private int centerPane_height;
     
     private final Images images = new Images();
-    
+    private final DataFile df = new DataFile();
     /**
      * Calculation constants:
      * fAlchemyIngredientInitMult = 4
@@ -55,15 +60,18 @@ public class Alchemy extends JFrame implements ActionListener {
     private final int fAlchemyIngredientInitMult = 4;
     private final float fAlchemySkillFactor = 1.5f;
     
-    private float AlchemyPerk = 1.0f;
-    private float PhysicianPerk = 1.0f;
-    private float BenefactorPerk = 1.0f;
-    private float PoisonerPerk = 1.0f;
-    private float SeekerOfShadows = 1.0f;
-    private int EnchantmentTotal = 0;
+    private Double AlchemyPerk = 1.0;
+    private Double PhysicianPerk = 1.0;
+    private Double BenefactorPerk = 1.0;
+    private Double PoisonerPerk = 1.0;
+    private Double SeekerOfShadows = 1.0;
+    private Double EnchantmentTotal = 1.0;
+    private int Duration = 0;
     private int BaseMag = 0;
-    private float BaseCost = 0.0f;
+    private int BaseDur = 0;
+    private Double BaseCost = 0.0;
     private int PotionMag = 0;
+    private int PotionDur = 0;
     private int PotionCost = 0;
     
     /**
@@ -132,28 +140,26 @@ public class Alchemy extends JFrame implements ActionListener {
     private JCheckBox chk_poisoner;
     private JCheckBox chk_seeker_of_shadows;
     
+    private JComboBox effectList;
+    
     private JPanel northPane;
     private JPanel westPane;
-    private JPanel labels;
-    private JPanel textFields;
     private JPanel centerPane;
     private JPanel eastPane;
-    private JPanel southPane;
+
     
     /**
      * Set up the default constructor:
      */
     public Alchemy() {
-       
+
         setTitle("Alchemy Calculator:");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(layout);
         setIconImage(images.getIcons(Images.ALCHEMY_ICON));
         setLocation(50, 10);
-//        setMaximumSize(new Dimension(frame_width, frame_height));
-//        setPreferredSize(new Dimension(frame_width, frame_height));
-        setResizable(false);
-        setUndecorated(true);
+        setResizable(true);
+        setUndecorated(false);
         initComponents();
         setVisible(true);
     }
@@ -164,22 +170,21 @@ public class Alchemy extends JFrame implements ActionListener {
         northPane();
         westPane();
         centerPane();
+        eastPane();
         
         add(BorderLayout.NORTH, northPane);
         add(BorderLayout.WEST, westPane);
         add(BorderLayout.CENTER, centerPane);
+        add(BorderLayout.EAST, eastPane);
 
         pack();
     }   
 
     private void northPane() {
         
-        northPane = CreateControls.createPanel(frame_width - 2, 220, true);
-        northPane.setBackground(Color.BLACK);
-        
-        JLabel header = new JLabel(images.getImages(Images.ALCHEMY_HEADER));
-        JLabel header_icon = new JLabel(images.getImages(Images.ALCHEMY));
-        header.setPreferredSize(new Dimension(275, 95));
+        JLabel header = new JLabel(Images.getImages(Images.ALCHEMY_HEADER));
+        JLabel header_icon = new JLabel(Images.getImages(Images.ALCHEMY));
+        header.setPreferredSize(new Dimension(270, 95));
         header_icon.setPreferredSize(new Dimension(210, 210));
         
         if(header.getPreferredSize().height > header_icon.getPreferredSize().height) {
@@ -198,7 +203,7 @@ public class Alchemy extends JFrame implements ActionListener {
 
     private void westPane() {
         westPane_width = 190;
-        westPane_height = 305;
+        westPane_height = 370;
         
         westPane = CreateControls.createPanel(westPane_width, westPane_height, true);
 
@@ -216,32 +221,40 @@ public class Alchemy extends JFrame implements ActionListener {
         lbl_ench_total.setLabelFor(txt_ench_total);
         lbl_base_mag = CreateControls.createLabel("Base Magnitude: ", 120,25, "Calibri", SwingConstants.RIGHT);
         lbl_base_mag.setLabelFor(txt_base_mag);
+        lbl_base_dur = CreateControls.createLabel("Base Duration: ", 120,25, "Calibri", SwingConstants.RIGHT);
+        lbl_base_dur.setLabelFor(txt_base_dur);
         lbl_base_gold = CreateControls.createLabel("Base Gold Value: ", 120,25, "Calibri", SwingConstants.RIGHT);
         lbl_base_gold.setLabelFor(txt_base_gold);
         lbl_calc_mag = CreateControls.createLabel("Potion Magnitude: ", 120,25, "Calibri", SwingConstants.RIGHT);
         lbl_calc_mag.setLabelFor(txt_calc_mag);
+        lbl_calc_dur = CreateControls.createLabel("Potion Duration: ", 120,25, "Calibri", SwingConstants.RIGHT);
+        lbl_calc_dur.setLabelFor(txt_calc_dur);
         lbl_calc_gold = CreateControls.createLabel("Potion Gold Value: ", 120,25, "Calibri", SwingConstants.RIGHT);
         lbl_calc_gold.setLabelFor(txt_calc_gold);
         
-        txt_alchemy_perk = CreateControls.createTextField("Calibri", 4, false);
+        txt_alchemy_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_alchemy_perk.setText("0%");
-        txt_physician_perk = CreateControls.createTextField("Calibri", 4, false);
+        txt_physician_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_physician_perk.setText("0%");
-        txt_benefactor_perk = CreateControls.createTextField("Calibri", 4, false);
+        txt_benefactor_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_benefactor_perk.setText("0%");
-        txt_poisoner_perk = CreateControls.createTextField("Calibri", 4, false);
+        txt_poisoner_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_poisoner_perk.setText("0%");
-        txt_seeker_of_shadows = CreateControls.createTextField("Calibri", 4, false);
+        txt_seeker_of_shadows = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_seeker_of_shadows.setText("0%");
-        txt_ench_total = CreateControls.createTextField("Calibri", 4, false);
+        txt_ench_total = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_ench_total.setText("0");
-        txt_base_mag = CreateControls.createTextField("Calibri", 4, false);
+        txt_base_mag = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_base_mag.setText("0");
-        txt_base_gold = CreateControls.createTextField("Calibri", 4, false);
-        txt_base_gold.setText("0");
-        txt_calc_mag = CreateControls.createTextField("Calibri", 4, false);
+        txt_base_dur = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
+        txt_base_dur.setText("0");
+        txt_base_gold = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
+        txt_base_gold.setText("0.0");
+        txt_calc_mag = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_calc_mag.setText("0");
-        txt_calc_gold = CreateControls.createTextField("Calibri", 4, false);
+        txt_calc_dur = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
+        txt_calc_dur.setText("0");
+        txt_calc_gold = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_calc_gold.setText("0");
         
         // Column 1:
@@ -259,55 +272,84 @@ public class Alchemy extends JFrame implements ActionListener {
         westPane.add(txt_ench_total);
         westPane.add(lbl_base_mag);
         westPane.add(txt_base_mag);
+        westPane.add(lbl_base_dur);
+        westPane.add(txt_base_dur);
         westPane.add(lbl_base_gold);
         westPane.add(txt_base_gold);
         westPane.add(lbl_calc_mag);
         westPane.add(txt_calc_mag);
+        westPane.add(lbl_calc_dur);
+        westPane.add(txt_calc_dur);
         westPane.add(lbl_calc_gold);
         westPane.add(txt_calc_gold);
-        
         pack();
     }
 
     private void centerPane() {
-        int center_west_pane_width = 180;
+        
         int comp_width = 150;
-        
-        centerPane_width = (frame_width - 2) - (westPane_width - 2);
-        centerPane_height = westPane_height;
-        
-        centerPane = CreateControls.createPanel(centerPane_width, centerPane_height, true);
-        JPanel center_west_panel = CreateControls.createPanel(center_west_pane_width, (centerPane_height - 2), true);
-        JPanel center_east_panel = CreateControls.createPanel(comp_width + 2, (centerPane_height - 2), true);
-                
+                        
         lbl_alchemy_skill = CreateControls.createLabel("Alchemy Skill: ", 90,25, "Calibri", SwingConstants.RIGHT);
-        lbl_alchemy_skill.setLabelFor(txt_alchemy_skill);
-        txt_alchemy_skill = CreateControls.createTextField("Calibri", 4, true);
-        lbl_ench_header = CreateControls.createLabel("Enchantments: ", 151,25, "Calibri", SwingConstants.CENTER);
+        txt_alchemy_skill = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
+        lbl_ench_header = CreateControls.createLabel("Enchantments: ", 145,25, "Calibri", SwingConstants.CENTER);
         lbl_ench_ring = CreateControls.createLabel("Ring: ", 90,25, "Calibri", SwingConstants.RIGHT);
-        lbl_ench_ring.setLabelFor(txt_ench_ring);
-        txt_ench_ring = CreateControls.createTextField("Calibri", 4, true);
+        txt_ench_ring = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         lbl_ench_amulet = CreateControls.createLabel("Amulet: ", 90,25, "Calibri", SwingConstants.RIGHT);
-        lbl_ench_amulet.setLabelFor(txt_ench_amulet);
-        txt_ench_amulet = CreateControls.createTextField("Calibri", 4, true);
+        txt_ench_amulet = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         lbl_ench_headgear = CreateControls.createLabel("Head Gear: ", 90,25, "Calibri", SwingConstants.RIGHT);
-        lbl_ench_headgear.setLabelFor(txt_ench_headgear);
-        txt_ench_headgear = CreateControls.createTextField("Calibri", 4, true);
+        txt_ench_headgear = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         lbl_ench_hands = CreateControls.createLabel("Hands: ", 90,25, "Calibri", SwingConstants.RIGHT);
-        lbl_ench_hands.setLabelFor(txt_ench_hands);
-        txt_ench_hands = CreateControls.createTextField("Calibri", 4, true);
+        txt_ench_hands = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         
-        rdoNone = CreateControls.createRadioButton("None", comp_width, 25, true);
+        lbl_alchemy_skill.setLabelFor(txt_alchemy_skill);
+        lbl_ench_ring.setLabelFor(txt_ench_ring);
+        lbl_ench_amulet.setLabelFor(txt_ench_amulet);
+        lbl_ench_headgear.setLabelFor(txt_ench_headgear);
+        lbl_ench_hands.setLabelFor(txt_ench_hands);
+        
+        JButton enchantCalc = CreateControls.createButton("Ench Total", 100, 25);
+        JButton potionCalc = CreateControls.createButton("Potion Calc", 100, 25);
+        
+        enchantCalc.addActionListener(this);
+        potionCalc.addActionListener(this);
+        
+        effectList = CreateControls.createList("Effect List", df.getKeys(), 145, 25, CreateControls.SKYRIMBOOKS_GAELIC, Font.PLAIN, 14);
+        effectList.addActionListener(this);
+        
+        centerPane = CreateControls.createPanel(153, 305, true);
+        centerPane.add(effectList);
+        centerPane.add(lbl_alchemy_skill);
+        centerPane.add(txt_alchemy_skill);
+        centerPane.add(lbl_ench_header);
+        centerPane.add(lbl_ench_ring);
+        centerPane.add(txt_ench_ring);
+        centerPane.add(lbl_ench_amulet);
+        centerPane.add(txt_ench_amulet);
+        centerPane.add(lbl_ench_headgear);
+        centerPane.add(txt_ench_headgear);
+        centerPane.add(lbl_ench_hands);
+        centerPane.add(txt_ench_hands);
+        centerPane.add(new JSeparator());
+        centerPane.add(enchantCalc);
+        centerPane.add(potionCalc);
+        pack();
+    }
+
+    private void eastPane() {
+        int comp_width = 150;
+        int comp_height = 25;
+        
+        rdoNone = CreateControls.createRadioButton("None", comp_width, 25, true, false, "Calibri", Font.PLAIN, 14);
         rdoNone.addActionListener(this);
-        rdoAlchemy1 = CreateControls.createRadioButton("Alchemy 1", comp_width, 25, false);
+        rdoAlchemy1 = CreateControls.createRadioButton("Alchemy 1", comp_width, 25, false, false, "Calibri", Font.PLAIN, 14);
         rdoAlchemy1.addActionListener(this);
-        rdoAlchemy2 = CreateControls.createRadioButton("Alchemy 2", comp_width, 25, false);
+        rdoAlchemy2 = CreateControls.createRadioButton("Alchemy 2", comp_width, 25, false, false, "Calibri", Font.PLAIN, 14);
         rdoAlchemy2.addActionListener(this);
-        rdoAlchemy3 = CreateControls.createRadioButton("Alchemy 3", comp_width, 25, false);
+        rdoAlchemy3 = CreateControls.createRadioButton("Alchemy 3", comp_width, 25, false, false, "Calibri", Font.PLAIN, 14);
         rdoAlchemy3.addActionListener(this);
-        rdoAlchemy4 = CreateControls.createRadioButton("Alchemy 4", comp_width, 25, false);
+        rdoAlchemy4 = CreateControls.createRadioButton("Alchemy 4", comp_width, 25, false, false, "Calibri", Font.PLAIN, 14);
         rdoAlchemy4.addActionListener(this);
-        rdoAlchemy5 = CreateControls.createRadioButton("Alchemy 5", comp_width, 25, false);
+        rdoAlchemy5 = CreateControls.createRadioButton("Alchemy 5", comp_width, 25, false, false, "Calibri", Font.PLAIN, 14);
         rdoAlchemy5.addActionListener(this);
         
         bg.add(rdoNone);
@@ -326,52 +368,20 @@ public class Alchemy extends JFrame implements ActionListener {
         chk_seeker_of_shadows = CreateControls.createCheckBox("Seeker Of Shadows", comp_width, 25, false);
         chk_seeker_of_shadows.addActionListener(this);
         
-        center_west_panel.add(lbl_alchemy_skill);
-        center_west_panel.add(txt_alchemy_skill);
-        center_west_panel.add(lbl_ench_header);
-        center_west_panel.add(lbl_ench_ring);
-        center_west_panel.add(txt_ench_ring);
-        center_west_panel.add(lbl_ench_amulet);
-        center_west_panel.add(txt_ench_amulet);
-        center_west_panel.add(lbl_ench_headgear);
-        center_west_panel.add(txt_ench_headgear);
-        center_west_panel.add(lbl_ench_hands);
-        center_west_panel.add(txt_ench_hands);
+        eastPane = CreateControls.createPanel( (comp_width + 2), 305, true);
         
-        center_east_panel.add(rdoNone);
-        center_east_panel.add(rdoAlchemy1);
-        center_east_panel.add(rdoAlchemy2);
-        center_east_panel.add(rdoAlchemy3);
-        center_east_panel.add(rdoAlchemy4);
-        center_east_panel.add(rdoAlchemy5);
-
-        center_east_panel.add(chk_physician);
-        center_east_panel.add(chk_benefactor);
-        center_east_panel.add(chk_poisoner);
-        center_east_panel.add(chk_seeker_of_shadows);
+        eastPane.add(rdoNone);
+        eastPane.add(rdoAlchemy1);
+        eastPane.add(rdoAlchemy2);
+        eastPane.add(rdoAlchemy3);
+        eastPane.add(rdoAlchemy4);
+        eastPane.add(rdoAlchemy5);
+        eastPane.add(chk_physician);
+        eastPane.add(chk_benefactor);
+        eastPane.add(chk_poisoner);
+        eastPane.add(chk_seeker_of_shadows);
         
-        centerPane.add(BorderLayout.WEST,center_west_panel );
-        centerPane.add(BorderLayout.CENTER, center_east_panel);
-        pack();
-    }
-
-    private void eastPane() {
-        eastPane = new JPanel();
-        eastPane.setMaximumSize(new Dimension(100, 100));
-        eastPane.setPreferredSize(new Dimension(100, 100));
-        eastPane.setBorder(BorderFactory.createLineBorder(Color.CYAN, 2, true));
-        eastPane.setBackground(Color.DARK_GRAY);
-        eastPane.setForeground(Color.DARK_GRAY);
-    }
-
-    private void southPane() {
-        southPane = new JPanel();
-        southPane.setMaximumSize(new Dimension(300, 100));
-        southPane.setMinimumSize(new Dimension(300, 100));
-        southPane.setPreferredSize(new Dimension(300, 100));
-        southPane.setBorder(BorderFactory.createLineBorder(Color.CYAN, 2, true));
-        southPane.setBackground(Color.BLUE);
-        southPane.setForeground(Color.GREEN);
+        pack();        
     }
 
     private void setJMenuBar() {
@@ -419,69 +429,159 @@ public class Alchemy extends JFrame implements ActionListener {
                 txt_alchemy_perk.setText("0%");
                 break;
             case "Alchemy 1":
-                AlchemyPerk = 1.20f;
+                AlchemyPerk = 1.20;
                 txt_alchemy_perk.setText("20%");
                 break;
             case "Alchemy 2":
-                AlchemyPerk = 1.40f;
+                AlchemyPerk = 1.40;
                 txt_alchemy_perk.setText("40%");
                 break;
             case "Alchemy 3":
-                AlchemyPerk = 1.60f;
+                AlchemyPerk = 1.60;
                 txt_alchemy_perk.setText("60%");
                 break;
             case "Alchemy 4":
-                AlchemyPerk = 1.80f;
+                AlchemyPerk = 1.80;
                 txt_alchemy_perk.setText("80%");
                 break;
             case "Alchemy 5":
-                AlchemyPerk = 2.0f;
+                AlchemyPerk = 2.0;
                 txt_alchemy_perk.setText("100%");
                 break;
             case "Physician Perk":
                 if(chk_physician.isSelected()) {
-                    PhysicianPerk = 1.25f;
+                    PhysicianPerk = 1.25;
                     txt_physician_perk.setText("25%");
                     break;
                 } else {
-                    PhysicianPerk = 1.0f;
+                    PhysicianPerk = 1.0;
                     txt_physician_perk.setText("0%");
                     break;
                 }
-                
             case "Benefactor Perk":
                 if(chk_benefactor.isSelected()) {
-                    BenefactorPerk = 1.25f;
+                    BenefactorPerk = 1.25;
                     txt_benefactor_perk.setText("25%");
                     break;
                 } else {
-                    BenefactorPerk = 1.0f;
+                    BenefactorPerk = 1.0;
                     txt_benefactor_perk.setText("0%");
                     break;
                 }
-                
             case "Poisoner Perk":
                 if(chk_poisoner.isSelected()) {
-                    PoisonerPerk = 1.25f;
+                    PoisonerPerk = 1.25;
                     txt_poisoner_perk.setText("25%");
                     break;
                 } else {
-                    PoisonerPerk = 1.0f;
+                    PoisonerPerk = 1.0;
                     txt_poisoner_perk.setText("0%");
                     break;
                 }
-                
             case "Seeker Of Shadows":
                 if(chk_seeker_of_shadows.isSelected()) {
-                    SeekerOfShadows = 1.1f;
+                    SeekerOfShadows = 1.1;
                     txt_seeker_of_shadows.setText("10%");
                     break;
                 } else {
-                    SeekerOfShadows = 1.0f;
+                    SeekerOfShadows = 1.0;
                     txt_seeker_of_shadows.setText("0%");
                     break;
                 }
-                
+            case "Ench Total":
+                enchantCalc();
+                break;
+            case "Effect List":
+                String key = effectList.getSelectedItem().toString();
+                BaseMag = Integer.parseInt(df.getBaseMag().get(key).toString());
+                BaseDur = (Integer.parseInt(df.getBaseDur().get(key).toString()));
+                BaseCost = Double.valueOf(df.getBaseCost().get(key).toString());
+                txt_base_mag.setText(Integer.toString(BaseMag));
+                txt_base_dur.setText(Integer.toString(BaseDur));
+                txt_base_gold.setText(Double.toString(BaseCost));
+                break;
+            case "Potion Calc":
+                potionMagCalc();
+                potionDurCalc();
+                potionCostCalc();
+                break;
         }
     }
+
+    private void potionMagCalc() {
+        /**
+         * Variables needed: 
+         *  AlchemyPerk
+         *  PhysicianPerk
+         *  BenefactorPerk
+         *  PoisonerPerk
+         *  SeekerOfShadows
+         *  EnchantmentTotal
+         *  BaseMag
+         *  BaseCost
+         */
+        Double AlchemySkill = Double.valueOf(txt_alchemy_skill.getText());
+        Double AlchemySkillFactor = 1 + (fAlchemySkillFactor - 1) * (AlchemySkill /100);
+        int step1 = BaseMag * fAlchemyIngredientInitMult;
+        Double step2 = step1 * AlchemySkillFactor;
+        Double step3 = step2 * EnchantmentTotal;
+        Double perks = AlchemyPerk * PhysicianPerk * BenefactorPerk * PoisonerPerk;
+        Double step4 = step3 * perks;
+        Double step5 = step4 * SeekerOfShadows;
+        PotionMag = (int) Math.round(step5);
+        txt_calc_mag.setText(Integer.toString(PotionMag));
+    }
+    
+    private void potionDurCalc() {
+        
+        BaseDur = Integer.parseInt(txt_base_dur.getText());
+        Duration = BaseDur;
+        int DurationFactor = 1;
+        if(BaseDur < 0) Duration = 0;
+        Duration = Math.round(Duration * DurationFactor);
+        if(Duration == 0) { 
+            txt_calc_dur.setText("*");
+        } else {
+            txt_calc_dur.setText(Integer.toString(Duration));
+        }
+    }
+    
+    private void potionCostCalc() {
+        int magnitudeFactor = 1;
+        Double duration = Double.valueOf(txt_base_dur.getText());
+        Double durationFactor = 0.0;
+        
+        if(PotionMag > 0) magnitudeFactor = PotionMag;
+        if(PotionMag == 0) magnitudeFactor = 1;
+        if(Duration > 0) durationFactor = duration / 10;
+        
+        Double magFact = Math.pow(magnitudeFactor, 1.1);
+        Double durFact = Math.pow(durationFactor, 1.1);
+        Double value = (BaseCost * Math.max(magFact, 1) * Math.max(durFact, 1));
+        PotionCost = (int) Math.round(Math.floor(value));
+        txt_calc_gold.setText(Integer.toString(PotionCost));
+    }
+
+    private void enchantCalc() {
+        Double ring = Double.valueOf(txt_ench_ring.getText());
+        Double amulet = Double.valueOf(txt_ench_amulet.getText());
+        Double headgear = Double.valueOf(txt_ench_headgear.getText());
+        Double hands = Double.valueOf(txt_ench_hands.getText());
+        Double temp = 1 + ((ring + amulet + headgear + hands)/100);
+        System.out.println("Enchantment Totals:");
+        System.out.println("    Ring: " + ring);
+        System.out.println("  Amulet: " + amulet);
+        System.out.println("Headgear: " + headgear);
+        System.out.println("   Hands: " + hands);
+        System.out.println("   Total: " + temp);
+        if(temp.toString().length() < 4) {
+            txt_ench_total.setText(Double.toString(temp));
+        } else {
+            txt_ench_total.setText(Double.toString(temp).substring(0, 4));
+        }
+        EnchantmentTotal = Double.valueOf(txt_ench_total.getText());
+    }
+
+    
+
 }

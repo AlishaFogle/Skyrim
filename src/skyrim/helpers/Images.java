@@ -27,8 +27,8 @@ public class Images {
     public static final String SMITHING_ICON = "Smithing_Icon";
     
     // Hashtables to hold image and icon data:
-    private final Hashtable<String,Image> icons = new Hashtable<>();
-    private final Hashtable<String,ImageIcon> images = new Hashtable<>();
+    public static final Hashtable<String,Image> icons = new Hashtable<>();
+    public static final Hashtable<String,ImageIcon> images = new Hashtable<>();
     
     // Icon setup:
     private final ImageIcon skyrim_icon = new ImageIcon(getClass().getResource("/skyrim/icons/Skyrim_96.png"));
@@ -55,7 +55,6 @@ public class Images {
         icons.put("Enchanting_Icon", enchanting_icon.getImage());
         icons.put("Smithing_Icon", smithing_icon.getImage());
     }
-    public Image getIcons(String key){ return icons.get(key); }
     
     private void setImages() {
         images.put("Skyrim_Header", skyrim_header);
@@ -65,6 +64,8 @@ public class Images {
         images.put("Enchanting", enchanting_image);
         images.put("Smithing", smithing_image);
     }
-    public ImageIcon getImages(String key) { return images.get(key); }
+    
+    public static Image getIcons(String key){ return icons.get(key); }
+    public static ImageIcon getImages(String key) { return images.get(key); }
     
 }
