@@ -1,0 +1,5 @@
+My Todo List for: Skyrim App
+1. Rewrite the DataFile.java to incorperate the PowerFactor
+2. Add 2 new JComboBox for multi-effects.
+3. Add 1 JScrollPane for the JList component.
+4. Test more.
