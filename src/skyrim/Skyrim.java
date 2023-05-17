@@ -29,7 +29,7 @@ public class Skyrim extends JFrame implements ActionListener {
         setLocation(50,10);
         setTitle("Skyrim");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setIconImage(images.getIcons("Skyrim_Icon"));
+        setIconImage(Images.getIcons("Skyrim_Icon"));
         initComponents();
         setVisible(true);        
     }
@@ -38,7 +38,7 @@ public class Skyrim extends JFrame implements ActionListener {
         createLookAndFeel();
         setMenuBar();
         
-        JLabel image = new JLabel(images.getImages(Images.SKYRIM_WALL));
+        JLabel image = new JLabel(Images.getImages(Images.SKYRIM_WALL));
         add(image);
         pack();
     }
