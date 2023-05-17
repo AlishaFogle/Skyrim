@@ -133,7 +133,6 @@ public class DataFile {
         baseCost.put("Weakness to Shock", 0.7f);
     }
     private void makeBaseMag() {
-        baseMag.put("An Effect",0);
         baseMag.put("Cure Disease", 5);
         baseMag.put("Damage Health", 2);
         baseMag.put("Damage Magicka", 3);

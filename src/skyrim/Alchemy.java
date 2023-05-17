@@ -234,28 +234,40 @@ public class Alchemy extends JFrame implements ActionListener {
         
         txt_alchemy_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_alchemy_perk.setText("0%");
+        txt_alchemy_perk.setEditable(false);
         txt_physician_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_physician_perk.setText("0%");
+        txt_physician_perk.setEditable(false);
         txt_benefactor_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_benefactor_perk.setText("0%");
+        txt_benefactor_perk.setEditable(false);
         txt_poisoner_perk = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_poisoner_perk.setText("0%");
+        txt_poisoner_perk.setEditable(false);
         txt_seeker_of_shadows = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_seeker_of_shadows.setText("0%");
+        txt_seeker_of_shadows.setEditable(false);
         txt_ench_total = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_ench_total.setText("0");
+        txt_ench_total.setEditable(false);
         txt_base_mag = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_base_mag.setText("0");
+        txt_base_mag.setEditable(false);
         txt_base_dur = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_base_dur.setText("0");
+        txt_base_dur.setEditable(false);
         txt_base_gold = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_base_gold.setText("0.0");
+        txt_base_gold.setEditable(false);
         txt_calc_mag = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_calc_mag.setText("0");
+        txt_calc_mag.setEditable(false);
         txt_calc_dur = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_calc_dur.setText("0");
+        txt_calc_dur.setEditable(false);
         txt_calc_gold = CreateControls.createTextField(4, true, "Calibri", Font.PLAIN, 14);
         txt_calc_gold.setText("0");
+        txt_calc_gold.setEditable(false);
         
         // Column 1:
         westPane.add(lbl_alchemy_perk);
@@ -329,9 +341,8 @@ public class Alchemy extends JFrame implements ActionListener {
         centerPane.add(txt_ench_headgear);
         centerPane.add(lbl_ench_hands);
         centerPane.add(txt_ench_hands);
-        centerPane.add(new JSeparator());
-        centerPane.add(enchantCalc);
-        centerPane.add(potionCalc);
+        centerPane.add(BorderLayout.CENTER,enchantCalc);
+        centerPane.add(BorderLayout.CENTER,potionCalc);
         pack();
     }
 
